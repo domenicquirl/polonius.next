@@ -73,22 +73,36 @@
 .input cfg_edge
 
 /////////////////////////////////////////////
-.decl subset(o1: Origin, o2: Origin, n: Node)
-.output subset
+.decl subset_from_path(o1: Origin, o2: Origin, path: symbol, n: Node)
+.output subset_from_path
 
-subset(O1, O2, N2) :- // Introduced by predecessor
+subset_from_path(O1, O2, N1, N2) :- // Introduced by predecessor
   cfg_edge(N1, N2),
   introduce_subset(O1, O2, N1).
 
-subset(O1, O2, N2) :- // Carried over from predecessor
+subset_from_path(O1, O2, cat(N1, P), N2) :- // Carried over from predecessor
   cfg_edge(N1, N2),
-  subset(O1, O2, N1),
+  subset_from_path(O1, O2, P, N1),
+  !contains(N1, P), // Don't loop infinitely
   !clear_origin(O1, N1),
   !clear_origin(O2, N1).
 
-subset(O1, O3, N1) :- // Transitive closure
-  subset(O1, O2, N1),
-  subset(O2, O3, N1).
+subset_from_path(O1, O3, P2, N) :- // Transitive closure
+  subset_from_path(O1, O2, P1, N),
+  subset_from_path(O2, O3, P2, N),
+  match(cat(P1, ".*"), P2). // P1 prefix of P2
+
+subset_from_path(O1, O3, P1, N) :- 
+  subset_from_path(O1, O2, P1, N),
+  subset_from_path(O2, O3, P2, N),
+  match(cat(P2, ".*"), P1). // P2 prefix of P1
+
+/////////////////////////////////////////////
+// .decl subset(o1: Origin, o2: Origin, n: Node)
+// .output subset
+
+// // Final subsets
+// subset(O1, O2, N) :- subset_from_path(O1, O2, _, N).
 
 ////////////////////////////////////////////
 .decl origin_invalidated(o: Origin, n: Node)
@@ -102,7 +116,7 @@ origin_invalidated(O, N2) :- // Introduced by predecessor
 origin_invalidated(O2, N2) :- 
   cfg_edge(N1, N2),
   !clear_origin(O2, N1),
-  subset(O1, O2, N1),
+  subset_from_path(O1, O2, _, N1),
   invalidate_origin(O1, N1).
 
 /////////////////////////////////////////////////////
