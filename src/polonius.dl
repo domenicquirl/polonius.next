@@ -83,7 +83,28 @@ subset_from_path(O1, O2, N1, N2) :- // Introduced by predecessor
 subset_from_path(O1, O2, cat(N1, P), N2) :- // Carried over from predecessor
   cfg_edge(N1, N2),
   subset_from_path(O1, O2, P, N1),
-  !contains(N1, P), // Don't loop infinitely
+  l = strlen(P),
+  l < 2,
+  !clear_origin(O1, N1),
+  !clear_origin(O2, N1).
+
+subset_from_path(O1, O2, cat(N1, P), N2) :- // Carried over from predecessor
+  cfg_edge(N1, N2),
+  subset_from_path(O1, O2, P, N1),
+  l = strlen(P),
+  l >= 2,
+  l % 2 = 0,
+  !contains(N1, substr(P, l / 2 + 1, l)), // Don't loop infinitely. Two iterations, with `+1` because we consider the predecessor `N1` here.
+  !clear_origin(O1, N1),
+  !clear_origin(O2, N1).
+
+subset_from_path(O1, O2, cat(N1, P), N2) :- // Carried over from predecessor
+  cfg_edge(N1, N2),
+  subset_from_path(O1, O2, P, N1),
+  l = strlen(P),
+  l >= 3,
+  l % 2 = 1,
+  !contains(N1, substr(P, l / 2 + 1 + 1, l)), // Don't loop infinitely. Two iterations, with `+1` because we consider the predecessor `N1` here.
   !clear_origin(O1, N1),
   !clear_origin(O2, N1).
 
@@ -96,13 +117,6 @@ subset_from_path(O1, O3, P1, N) :-
   subset_from_path(O1, O2, P1, N),
   subset_from_path(O2, O3, P2, N),
   match(cat(P2, ".*"), P1). // P2 prefix of P1
-
-/////////////////////////////////////////////
-// .decl subset(o1: Origin, o2: Origin, n: Node)
-// .output subset
-
-// // Final subsets
-// subset(O1, O2, N) :- subset_from_path(O1, O2, _, N).
 
 ////////////////////////////////////////////
 .decl origin_invalidated(o: Origin, n: Node)
