@@ -11,6 +11,11 @@ eyre = "0.6.5"
 itertools = "0.10"
 bumpalo = { version = "3.7.1", features = ["collections"] }
 
+differential_datalog = { path="dl/polonius_dl_ddlog/differential_datalog" }
+polonius_dl          = { path="dl/polonius_dl_ddlog/" }
+types                = { path="dl/polonius_dl_ddlog/types" }
+internment           = { path="dl/polonius_dl_ddlog/types/internment" }
+
 # Graphviz
 glob = "0.3"
 html-escape = "0.2"

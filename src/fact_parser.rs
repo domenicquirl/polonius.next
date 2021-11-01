@@ -66,7 +66,7 @@ peg::parser! {
     }
 }
 
-fn parse_facts(input: &str) -> eyre::Result<Program> {
+pub(crate) fn parse_facts(input: &str) -> eyre::Result<Program> {
     Ok(fact_parser::program(input)?)
 }
 
@@ -97,7 +97,7 @@ const EXPECTED_LOCAL_FACT_NAMES: &[&str] = &[
 ];
 
 /// Maps a program into a set of facts:
-fn collect_facts(program: &Program) -> eyre::Result<HashMap<String, Vec<Vec<String>>>> {
+pub(crate) fn collect_facts(program: &Program) -> eyre::Result<HashMap<String, Vec<Vec<String>>>> {
     let mut facts = HashMap::new();
 
     for expected in EXPECTED_GLOBAL_FACT_NAMES
