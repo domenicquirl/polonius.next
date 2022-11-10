@@ -213,12 +213,12 @@ SubsetOnEntry(o1, o2, valid_at) :-
   l == s.
 
 ////////////////////////////////////////////
-output relation OriginInvalidatedIfLive(o: Origin, if_live: Set<Origin>, seen: Set<Origin>, valid_at: Node, pred: Node, n: Node)
+output relation OriginInvalidatedIfLive(o: Origin, if_live: Set<Origin>, seen: Set<Origin>, valid_at: Node, n: Node)
 
 // Carried over from predecessor, filtered for clears
-OriginInvalidatedIfLive(o, l, s, valid_at, source, n2) :- 
+OriginInvalidatedIfLive(o, l, s, valid_at, n2) :- 
   CfgEdge(n1, n2), 
-  OriginInvalidatedIfLive(o, l, s, valid_at, source, n1),
+  OriginInvalidatedIfLive(o, l, s, valid_at, n1),
   not ClearOrigin(o, n1),
   // Origins in l\s are yet to be seen to be accessed to count as live.
   // If such an origin is cleared, it is cleared before the access, and thus not live.
@@ -229,45 +229,45 @@ OriginInvalidatedIfLive(o, l, s, valid_at, source, n2) :-
 // Because invalidations conceptually happen before clears, 
 // propagate them across (existing, not introduced) subset relationships
 // even if `o1` is also (conceptually later) cleared in `n1`.
-OriginInvalidatedIfLive(o2, l, s, n2, n1, n2) :- 
+OriginInvalidatedIfLive(o2, l, s, n2, n2) :- 
   CfgEdge(n1, n2),
   SubsetIfLiveOnEntry(o1, o2, l, s, n1, n1),
   not ClearOrigin(o2, n1),
   InvalidateOrigin(o1, n1).
 
 // Accumulate accesses
-OriginInvalidatedIfLive(o, l, new_s, valid_at, n, n) :- 
-  OriginInvalidatedIfLive(o, l, s, valid_at, _, n),
+OriginInvalidatedIfLive(o, l, new_s, valid_at, n) :- 
+  OriginInvalidatedIfLive(o, l, s, valid_at, n),
   AccessOrigin(orig, n),
   contains(l, orig),
   var new_s = set_union(s, set_singleton(orig)).
-OriginInvalidatedIfLive(o, l, new_s, valid_at, n, n) :- 
-  OriginInvalidatedIfLive(o, l, s, valid_at, _, n),
+OriginInvalidatedIfLive(o, l, new_s, valid_at, n) :- 
+  OriginInvalidatedIfLive(o, l, s, valid_at, n),
   AccessOrigin(orig, n),
   contains(l, orig),
   var new_s = set_union(s, set_singleton(orig)).
 
 ////////////////////////////////////////////
-output relation OriginInvalidated(o: Origin, source: Node, n: Node)
+output relation OriginInvalidated(o: Origin, n: Node)
 
-OriginInvalidated(o, n1, n2) :- // Introduced by predecessor
+OriginInvalidated(o, n2) :- // Introduced by predecessor
   CfgEdge(n1, n2),
   InvalidateOrigin(o, n1),
   not ClearOrigin(o, n1).
-OriginInvalidated(o, n1, n2) :- // Introduced by predecessor
+OriginInvalidated(o, n2) :- // Introduced by predecessor
   CfgEdge(n1, n2),
-  OriginInvalidated(o, _, n1),
+  OriginInvalidated(o, n1),
   not ClearOrigin(o, n1).
 
 // Activated because they are now live.
-OriginInvalidated(o, source, valid_at) :- 
-  OriginInvalidatedIfLive(o, l, s, valid_at, source, _),
+OriginInvalidated(o, valid_at) :- 
+  OriginInvalidatedIfLive(o, l, s, valid_at, _),
   l == s.
 
 // Because invalidations conceptually happen before clears, 
 // propagate them across (existing, not introduced) subset relationships
 // even if `o1` is also (conceptually later) cleared in `n1`.
-OriginInvalidated(o2, n1, n2) :- 
+OriginInvalidated(o2, n2) :- 
   CfgEdge(n1, n2),
   SubsetOnEntry(o1, o2, n1),
   not ClearOrigin(o2, n1),
@@ -278,5 +278,5 @@ output relation InvalidatedOriginAccessed(o: Origin, n: Node)
 
 InvalidatedOriginAccessed(o, n) :- // Introduced by predecessor
   AccessOrigin(o, n),
-  OriginInvalidated(o, _, n).
+  OriginInvalidated(o, n).
 

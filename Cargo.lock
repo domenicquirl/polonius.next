@@ -227,6 +227,7 @@ version = "0.1.0"
 dependencies = [
  "abomonation",
  "ddlog_derive",
+ "ddlog_profiler",
  "ddlog_rt",
  "differential-dataflow",
  "differential_datalog",
@@ -258,6 +259,7 @@ version = "0.1.0"
 dependencies = [
  "abomonation",
  "ddlog_derive",
+ "ddlog_profiler",
  "differential-dataflow",
  "differential_datalog",
  "erased-serde",
@@ -274,11 +276,26 @@ dependencies = [
 ]
 
 [[package]]
+name = "ddlog_profiler"
+version = "0.1.0"
+dependencies = [
+ "csv",
+ "differential-dataflow",
+ "fnv",
+ "once_cell",
+ "sequence_trie",
+ "serde",
+ "serde_json",
+ "timely",
+]
+
+[[package]]
 name = "ddlog_rt"
 version = "0.1.0"
 dependencies = [
  "abomonation",
  "ddlog_derive",
+ "ddlog_profiler",
  "differential-dataflow",
  "differential_datalog",
  "erased-serde",
@@ -301,6 +318,7 @@ dependencies = [
  "abomonation",
  "ddlog_bigint",
  "ddlog_derive",
+ "ddlog_profiler",
  "ddlog_rt",
  "differential-dataflow",
  "differential_datalog",
@@ -351,6 +369,7 @@ dependencies = [
  "abomonation",
  "ddlog_bigint",
  "ddlog_derive",
+ "ddlog_profiler",
  "ddlog_rt",
  "ddlog_std",
  "differential-dataflow",
@@ -388,7 +407,7 @@ dependencies = [
  "abomonation",
  "abomonation_derive",
  "crossbeam-channel",
- "csv",
+ "ddlog_profiler",
  "ddshow-sink",
  "differential-dataflow",
  "dogsdogsdogs",
@@ -397,8 +416,8 @@ dependencies = [
  "fnv",
  "libc",
  "num",
+ "once_cell",
  "ordered-float",
- "sequence_trie",
  "serde",
  "serde_json",
  "timely",
@@ -638,6 +657,7 @@ dependencies = [
  "abomonation",
  "ddlog_bigint",
  "ddlog_derive",
+ "ddlog_profiler",
  "ddlog_rt",
  "ddlog_std",
  "differential-dataflow",
@@ -1010,6 +1030,7 @@ dependencies = [
  "crossbeam-channel",
  "ddlog_bigint",
  "ddlog_log",
+ "ddlog_profiler",
  "ddlog_rt",
  "ddlog_std",
  "debug",
@@ -1553,6 +1574,7 @@ dependencies = [
  "ddlog_bigint",
  "ddlog_derive",
  "ddlog_log",
+ "ddlog_profiler",
  "ddlog_rt",
  "ddlog_std",
  "debug",
